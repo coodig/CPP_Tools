@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AstroSphere - Planets Orbiting Sun</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+  </style>
+</head>
+<body>
+<script>
+  let planets = [];
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight);
+    angleMode(DEGREES);
+
+    // Define planets with distance from sun, size, color, and speed
+    planets.push({ distance: 70, size: 15, color: 'orange', angle: 0, speed: 1.2 }); // Mercury
+    planets.push({ distance: 100, size: 20, color: 'yellow', angle: 90, speed: 1 }); // Venus
+    planets.push({ distance: 140, size: 25, color: 'blue', angle: 180, speed: 0.8 }); // Earth
+    planets.push({ distance: 180, size: 22, color: 'red', angle: 270, speed: 0.6 }); // Mars
+    // Add more planets if you want
+  }
+
+  function draw() {
+    background(0);
+
+    // Draw Sun at center
+    fill('yellow');
+    ellipse(width / 2, height / 2, 80, 80);
+
+    // Draw orbits
+    noFill();
+    stroke(100);
+    for (let p of planets) {
+      ellipse(width / 2, height / 2, p.distance * 2, p.distance * 2);
+    }
+
+    // Draw planets orbiting
+    noStroke();
+    for (let p of planets) {
+      let x = width / 2 + cos(p.angle) * p.distance;
+      let y = height / 2 + sin(p.angle) * p.distance;
+      fill(p.color);
+      ellipse(x, y, p.size, p.size);
+
+      // Update angle for orbiting motion
+      p.angle = (p.angle + p.speed) % 360;
+    }
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+</script>
+</body>
+</html>
