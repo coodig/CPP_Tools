@@ -1,95 +1,87 @@
-#include "renamer.h"
-#include <filesystem>
+// #include <iostream>
+// #include <string>
+// #include <vector>
+// #include <filesystem>
+// #include "logger.h"
+// #include "renamer.h"
+// #include "file_utils.h"
+
+// namespace fs = std::filesystem;
+
+// int main() {
+//     std::string dirctoryPath;
+//     std::string extension;
+//     std::string newBaseName;
+
+//     std::cout<<"Enter directory path: ";
+//     std::getline(std::cin, dirctoryPath);
+
+//     if(!fs::exists(dirctoryPath) ||!fs::is_directory(dirctoryPath)){
+//         logError("directory is not valid or no exist..");
+//         return 1;
+//     }
+
+//     std::cout<<"Enter extension : ";
+//     std::cin>>extension;
+
+//     std::cout<<"Enter new base name: ";
+//     std::cin>>newBaseName;
+
+//     std::vector<fs::directory_entry> files = getFilesWithExtension(dirctoryPath, extension);
+
+//     if(files.empty()){
+//         logInfo("no files found with given extension");
+//         return 0;
+//     }
+
+//     // renameFiles(files, newBaseName, dirctoryPath);
+//     batchRenameFiles(path, extension, newBaseName);
+
+
+//     return 0;
+// }
+
+
 #include <iostream>
-#include <algorithm>
-#include <cctype>
+#include <string>
+#include <vector>
+#include <filesystem>
+#include "logger.h"
+#include "file_utils.h"
 
 namespace fs = std::filesystem;
 
-// Add prefix to all files
-void addPrefix(const std::string& folderPath, const std::string& prefix) {
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            std::string oldName = entry.path().filename().string();
-            std::string newName = prefix + oldName;
-            fs::rename(entry.path(), entry.path().parent_path() / newName);
-            std::cout << "Renamed: " << oldName << " -> " << newName << "\n";
-        }
-    }
-}
+int main() {
+    std::string directoryPath;
+    std::string extension;
+    std::string newBaseName;
 
-// Add suffix before extension
-void addSuffix(const std::string& folderPath, const std::string& suffix) {
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            fs::path oldPath = entry.path();
-            std::string stem = oldPath.stem().string();
-            std::string extension = oldPath.extension().string();
-            std::string newName = stem + suffix + extension;
-            fs::rename(oldPath, oldPath.parent_path() / newName);
-            std::cout << "Renamed: " << oldPath.filename().string() << " -> " << newName << "\n";
-        }
-    }
-}
+    std::cout << "Enter directory path: ";
+    std::getline(std::cin, directoryPath);
 
-// Replace substring in filenames
-void replaceSubstring(const std::string& folderPath, const std::string& from, const std::string& to) {
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            std::string oldName = entry.path().filename().string();
-            size_t pos = oldName.find(from);
-            if (pos != std::string::npos) {
-                std::string newName = oldName;
-                while ((pos = newName.find(from)) != std::string::npos) {
-                    newName.replace(pos, from.length(), to);
-                }
-                fs::rename(entry.path(), entry.path().parent_path() / newName);
-                std::cout << "Renamed: " << oldName << " -> " << newName << "\n";
-            }
-        }
+    if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+        logError("Directory is not valid or does not exist.");
+        return 1;
     }
-}
 
-// Rename files as numbered sequence: 1.ext, 2.ext, ...
-void renameNumbered(const std::string& folderPath) {
-    int counter = 1;
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            fs::path oldPath = entry.path();
-            std::string extension = oldPath.extension().string();
-            std::string newName = std::to_string(counter++) + extension;
-            fs::rename(oldPath, oldPath.parent_path() / newName);
-            std::cout << "Renamed: " << oldPath.filename().string() << " -> " << newName << "\n";
-        }
-    }
-}
+    std::cout << "Enter extension (e.g. .txt): ";
+    std::cin >> extension;
 
-// Convert filenames to uppercase
-void renameUppercase(const std::string& folderPath) {
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            std::string oldName = entry.path().filename().string();
-            std::string newName = oldName;
-            std::transform(newName.begin(), newName.end(), newName.begin(), ::toupper);
-            if (oldName != newName) {
-                fs::rename(entry.path(), entry.path().parent_path() / newName);
-                std::cout << "Renamed: " << oldName << " -> " << newName << "\n";
-            }
-        }
-    }
-}
+    std::cout << "Enter new base name: ";
+    std::cin >> newBaseName;
 
-// Convert filenames to lowercase
-void renameLowercase(const std::string& folderPath) {
-    for (const auto& entry : fs::directory_iterator(folderPath)) {
-        if (entry.is_regular_file()) {
-            std::string oldName = entry.path().filename().string();
-            std::string newName = oldName;
-            std::transform(newName.begin(), newName.end(), newName.begin(), ::tolower);
-            if (oldName != newName) {
-                fs::rename(entry.path(), entry.path().parent_path() / newName);
-                std::cout << "Renamed: " << oldName << " -> " << newName << "\n";
-            }
-        }
+    std::vector<fs::directory_entry> files = getFilesWithExtension(directoryPath, extension);
+
+    if (files.empty()) {
+        logInfo("No files found with the given extension.");
+        return 0;
     }
+
+    if (renameFiles(files, newBaseName, extension)) {
+        logSuccess("All files renamed successfully.");
+    } else {
+        logError("Some files could not be renamed.");
+    }
+
+    return 0;
 }

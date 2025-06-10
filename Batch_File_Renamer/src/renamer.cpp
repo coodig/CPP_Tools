@@ -1,68 +1,92 @@
-#include "renamer.h"
-#include "../../common/logger.h"
-#include <iostream>
-#include <filesystem>
-#include <sstream>
-#include <iomanip>
-#include <vector>
+// #include "renamer.h"
+// #include "../../common/logger.h"
+// #include <iostream>
+// #include <string>
+// #include <sstream>
+// #include <filesystem>
 
+// using namespace std;
+
+// namespace fs = std::filesystem;
+
+// void batchRenameFiles(const std::string& directoryPath, const std::string& extension, const std::string& newBaseName){
+//     if(!fs::exists(directoryPath) || !fs::is_directory(directoryPath)){
+//         logError("Invalid directory path");
+//         return;
+//     }
+
+//     int counter = 1;
+
+//     for(const auto& entry: fs::directory_iterator(directoryPath)){
+//         if(fs::is_regular_file(entry.status())){
+//             std::string currentExtension = entry.path().extension().string();
+//             if(currentExtension == extension){
+//                 std::ostringstream newFileName;
+//                 newFileName << newBaseName << "_" << counter << extension;
+                
+//                 fs::path newFilePath = entry.path().parent_path() / newFileName.str();
+
+//                 try
+//                 {
+//                     fs::rename(entry.path(), newFilePath);
+//                     logSuccess("Renamed: " + entry.path().filename().string() + "->"  + newFileName.str());
+//                     counter++;
+//                 }
+//                 catch(const std::exception& e)
+//                 {
+//                     logError("Failed to rename: " + entry.path().filename().string());
+//                 }
+//             }
+//         }
+//     }   
+//     if (counter == 1) {
+//         logInfo("No files with extension '" + extension + "' found in the directory.");
+//     }
+// }
+
+#include "renamer.h"
+#include "logger.h"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <filesystem>
+
+using namespace std;
 namespace fs = std::filesystem;
 
-std::vector<fs::path> getFilesInDirectory(const std::string& directory) {
-std::vector<fs::path> files;
-if (!fs::exists(directory) || !fs::is_directory(directory)) {
-logError("Invalid directory: " + directory);
-return files;
-}
-
-for (const auto& entry : fs::directory_iterator(directory)) {
-    if (fs::is_regular_file(entry.path())) {
-        files.push_back(entry.path());
-    }
-}
-
-return files;
-
-}
-
-void renameFilesWithPattern(const std::vector<fs::path>& files, const std::string& pattern, const std::string& mode) {
-for (const auto& file : files) {
-std::string originalName = file.stem().string();
-std::string extension = file.extension().string();
-fs::path newPath;
-    if (mode == "prefix") {
-        newPath = file.parent_path() / (pattern + "_" + originalName + extension);
-    } else if (mode == "suffix") {
-        newPath = file.parent_path() / (originalName + "_" + pattern + extension);
-    } else {
-        logError("Invalid mode: Use 'prefix' or 'suffix'");
+void batchRenameFiles(const std::string& directoryPath, const std::string& extension, const std::string& newBaseName){
+    if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+        logError("Invalid directory path: " + directoryPath);
         return;
     }
 
-    try {
-        fs::rename(file, newPath);
-        logSuccess("Renamed: " + file.filename().string() + " -> " + newPath.filename().string());
-    } catch (const std::exception& e) {
-        logError("Failed to rename " + file.filename().string() + ": " + e.what());
+    int counter = 1;
+
+    for (const auto& entry : fs::directory_iterator(directoryPath)) {
+        if (fs::is_regular_file(entry.status())) {
+            std::string currentExtension = entry.path().extension().string();
+            if (currentExtension == extension) {
+                std::ostringstream newFileName;
+                newFileName << newBaseName << "_" << counter << extension;
+
+                // fs::path newFilePath = fs::path(directoryPath) / newFileName.str();  // safer than entry.path().parent_path()
+
+                fs::path dirPath(directoryPath);
+                fs::path newFilePath = dirPath / fs::path(newFileName.str()).filename();
+
+
+                try {
+                    fs::rename(entry.path(), newFilePath);
+                    logSuccess("Renamed: " + entry.path().filename().string() + " -> " + newFileName.str());
+                    counter++;
+                } catch (const fs::filesystem_error& e) {
+                    logError("Failed to rename: " + entry.path().filename().string() + " -> " + e.what());
+                }
+            }
+        }
     }
-}
 
-}
-
-void renameFilesSequentially(const std::vector<fs::path>& files, const std::string& baseName) {
-int width = std::to_string(files.size()).length(); // padding width
-
-for (size_t i = 0; i < files.size(); ++i) {
-    std::ostringstream newName;
-    newName << baseName << std::setfill('0') << std::setw(width) << (i + 1) << files[i].extension().string();
-
-    fs::path newPath = files[i].parent_path() / newName.str();
-
-    try {
-        fs::rename(files[i], newPath);
-        logSuccess("Renamed: " + files[i].filename().string() + " -> " + newPath.filename().string());
-    } catch (const std::exception& e) {
-        logError("Failed to rename " + files[i].filename().string() + ": " + e.what());
+    if (counter == 1) {
+        logInfo("No files with extension '" + extension + "' found in the directory.");
     }
-}
 }

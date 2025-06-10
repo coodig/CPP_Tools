@@ -6,5 +6,6 @@ A complete collection of practical, creative, and high-performance Command Line 
 
 ## 📁 File & Folder Utilities
 
-1. Auto File Organizer : Working
-2. Batch File Renamer : Under Delevlopment
+1. Auto File Organizer : Completed
+2. Batch File Renamer : Completed
+3. Duplicate File Finder : Under Development 
