@@ -9,4 +9,5 @@ A complete collection of practical, creative, and high-performance Command Line 
 1. Auto File Organizer : Completed
 2. Batch File Renamer : Completed
 3. Duplicate File Finder : Completed
-4. Log Cleaner : Under Development
+4. Log Cleaner : Almost Completed
+5. File Integrity Checker : Under Development

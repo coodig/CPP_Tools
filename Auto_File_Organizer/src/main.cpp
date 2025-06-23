@@ -72,6 +72,6 @@ int main(int argc, char* argv[]) {
 // It's jus example so that u can understand that how we can execute it:-
 
 
-// PS C:\Users\nehab\Desktop\c++ tools\Auto_File_Organizer\src> g++ -std=c++17 main.cpp ../../common/file_utils.cpp ../../common/logger.cpp -o organizer.exe
+// PS C:\Users\..\Desktop\c++ tools\Auto_File_Organizer\src> g++ -std=c++17 main.cpp ../../common/file_utils.cpp ../../common/logger.cpp -o organizer.exe
 
-// PS C:\Users\nehab\Desktop\c++ tools\Auto_File_Organizer\src> .\organizer.exe "E:\desktop 23-10-24\camerea"
+// PS C:\Users\..\Desktop\c++ tools\Auto_File_Organizer\src> .\organizer.exe "E:\desktop 23-10-24\camerea"
