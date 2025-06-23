@@ -69,7 +69,7 @@ g++ -std=c++17 -o organizer main.cpp ../../common/file_utils.cpp ../../common/lo
 ```sh
 g++ -std=c++17 -o organizer.exe main.cpp ..\..\common\file_utils.cpp ..\..\common\logger.cpp
 
-organizer.exe "C:\Users\yourname\Downloads"
+./organizer.exe "C:\Users\yourname\Downloads"
 ```
 
 ## Disclaimer : Make sure you're in the src folder while compiling.
@@ -82,13 +82,13 @@ On Linux/macOS:
 ```
 On Windows (Command Prompt or PowerShell):
 ```sh
-organizer.exe "C:\Users\yourname\Downloads"
+./organizer.exe "C:\Users\yourname\Downloads"
 ```
 ## Example
 - Windows: cmd
 
 ```sh
-.\organizer.exe "E:\desktop 23-10-24\camerea"
+./organizer.exe "E:\desktop 23-10-24\camerea"
 ```
 - Linux/macOS:
 
